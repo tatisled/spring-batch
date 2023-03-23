@@ -34,6 +34,7 @@ import org.springframework.batch.core.repository.dao.JdbcExecutionContextDao;
 import org.springframework.batch.core.repository.dao.JdbcJobExecutionDao;
 import org.springframework.batch.core.repository.dao.JdbcJobInstanceDao;
 import org.springframework.batch.core.repository.dao.JdbcStepExecutionDao;
+import org.springframework.batch.support.DatabaseType;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -138,6 +139,7 @@ class BatchRegistrarTests {
 				"jobInstanceDao");
 		JdbcTemplate jdbcTemplate = (JdbcTemplate) ReflectionTestUtils.getField(jobInstanceDao, "jdbcTemplate");
 		DataSource dataSource = (DataSource) ReflectionTestUtils.getField(jdbcTemplate, "dataSource");
+//		DataSource dataSource = (DataSource) ReflectionTestUtils.getField(jdbcTemplate, "data");
 		Assertions.assertEquals(context.getBean(DataSource.class), dataSource);
 
 		JdbcJobExecutionDao jobExecutionDao = (JdbcJobExecutionDao) ReflectionTestUtils.getField(jobRepository,
@@ -180,6 +182,15 @@ class BatchRegistrarTests {
 		Assertions.assertNotNull(jobExplorer);
 		Assertions.assertNotNull(jobRegistry);
 		Assertions.assertNotNull(jobOperator);
+	}
+
+	@Test
+	@DisplayName("When custom beans are provided, then default ones should not be used")
+	void testConfigurationWithDatabaseTypeDefinedBeans() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				JobConfigurationWithDatabaseType.class);
+		DatabaseType databaseType = context.getBean(DatabaseType.class);
+
 	}
 
 	@Configuration
@@ -258,7 +269,7 @@ class BatchRegistrarTests {
 	}
 
 	@Configuration
-	@EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "batchTransactionManager")
+	@EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "batchTransactionManager", databaseType = DatabaseType.MYSQL)
 	public static class JobConfigurationWithCustomBeanNames {
 
 		@Bean
@@ -284,6 +295,15 @@ class BatchRegistrarTests {
 			}
 		}
 		return null;
+	}
+
+	@Configuration
+	@EnableBatchProcessing(databaseType = DatabaseType.DERBY)
+	public static class JobConfigurationWithDatabaseType {
+		@Bean
+		public DatabaseType databaseType() {
+			return DatabaseType.DERBY;
+		}
 	}
 
 }

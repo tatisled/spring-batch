@@ -32,6 +32,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.AbstractJdbcBatchMetadataDao;
+import org.springframework.batch.support.DatabaseType;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -200,6 +201,12 @@ public @interface EnableBatchProcessing {
 	 * @return the Batch table prefix
 	 */
 	String tablePrefix() default AbstractJdbcBatchMetadataDao.DEFAULT_TABLE_PREFIX;
+
+	/**
+	 * Set the data source to use in the job repository and job explorer.
+	 * @return the bean name of the data source to use. Default to {@literal dataSource}.
+	 */
+	String databaseType() default "";
 
 	/**
 	 * The maximum length of exit messages in the database.

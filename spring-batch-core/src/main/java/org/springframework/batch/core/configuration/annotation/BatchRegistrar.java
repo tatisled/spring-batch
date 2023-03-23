@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
 import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.batch.support.DatabaseType;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -124,6 +125,11 @@ class BatchRegistrar implements ImportBeanDefinitionRegistrar {
 			beanDefinitionBuilder.addPropertyValue("tablePrefix", tablePrefix);
 		}
 
+		String databaseType = batchAnnotation.databaseType();
+		if (databaseType != null) {
+			beanDefinitionBuilder.addPropertyValue("databaseType", databaseType);
+		}
+
 		String isolationLevelForCreate = batchAnnotation.isolationLevelForCreate();
 		if (isolationLevelForCreate != null) {
 			beanDefinitionBuilder.addPropertyValue("isolationLevelForCreate", isolationLevelForCreate);
@@ -176,6 +182,12 @@ class BatchRegistrar implements ImportBeanDefinitionRegistrar {
 		if (tablePrefix != null) {
 			beanDefinitionBuilder.addPropertyValue("tablePrefix", tablePrefix);
 		}
+
+		String databaseType = batchAnnotation.databaseType();
+		if (databaseType != null) {
+			beanDefinitionBuilder.addPropertyValue("databaseType", databaseType);
+		}
+
 		registry.registerBeanDefinition("jobExplorer", beanDefinitionBuilder.getBeanDefinition());
 	}
 
